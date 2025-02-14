@@ -28,114 +28,109 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       body: GetBuilder<HomeController>(builder: (controller) {
         return SafeArea(
-          child: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverAppBar(
-                floating: false,
-                title: Image(
-                  image: AssetImage(Get.find<ThemeController>().isDarkMode.value
-                      ? Assets.logo
-                      : Assets.logoDark),
-                  width: Get.size.width * 0.3,
-                ),
-                actions: [
-                  IconButton(
-                      onPressed: () {
-                        Get.find<ThemeController>().toggleTheme();
-                        setState(() {});
-                        Get.log("Theme: ${Get.theme.brightness}");
-                      },
-                      icon: Icon(Theme.of(context).brightness == Brightness.dark
-                          ? Icons.dark_mode_outlined
-                          : Icons.wb_sunny_outlined)),
-                ],
-                expandedHeight: expandedHeight,
-                bottom: PreferredSize(
-                  preferredSize: Size.fromHeight(expandedHeight),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      children: [
-                        TextField(
-                          decoration: InputDecoration(
-                            hintText: "Search Country",
-                            prefixIcon: Icon(Icons.search,
-                                color: Get.theme.hintColor),
-                            contentPadding: EdgeInsets.all(16),
-                            filled: true,
-                            fillColor: Get.theme.cardColor,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          onChanged: (text) {
-                            controller.searchCountries(text);
-                          },
-                        ),
-                        /*Container(
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Get.theme.cardColor,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.search, color: Get.theme.hintColor),
-                              SizedBox(
-                                width: 10,
+          child: RefreshIndicator(
+            onRefresh: () async {
+              controller.fetchCountryData();
+            },
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  floating: false,
+                  title: Image(
+                    image: AssetImage(Get.find<ThemeController>().isDarkMode.value
+                        ? Assets.logo
+                        : Assets.logoDark),
+                    width: Get.size.width * 0.3,
+                  ),
+                  actions: [
+                    IconButton(
+                        onPressed: () {
+                          Get.find<ThemeController>().toggleTheme();
+                          setState(() {});
+                          Get.log("Theme: ${Get.theme.brightness}");
+                        },
+                        icon: Icon(Theme.of(context).brightness == Brightness.dark
+                            ? Icons.dark_mode_outlined
+                            : Icons.wb_sunny_outlined)),
+                  ],
+                  expandedHeight: expandedHeight,
+                  bottom: PreferredSize(
+                    preferredSize: Size.fromHeight(expandedHeight),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        children: [
+                          TextField(
+                            decoration: InputDecoration(
+                              hintText: "Search Country",
+                              prefixIcon:
+                                  Icon(Icons.search, color: Get.theme.hintColor),
+                              contentPadding: EdgeInsets.all(16),
+                              filled: true,
+                              fillColor: Get.theme.cardColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(4),
+                                borderSide: BorderSide.none,
                               ),
-                              Text("Search Country",
-                                  style: Get.textTheme.titleSmall
-                                      ?.copyWith(color: Get.theme.hintColor))
+                            ),
+                            onChanged: (text) {
+                              controller.searchCountries(text);
+                            },
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Row(
+                            children: [
+                              OptionTile(
+                                  icon: Icons.language,
+                                  title: "EN",
+                                  onTap: () {
+                                    Get.bottomSheet(
+                                      LanguageBottomSheet(),
+                                      isScrollControlled: true,
+                                    );
+                                  }),
+                              Spacer(),
+                              OptionTile(
+                                icon: Icons.filter_alt_outlined,
+                                title: "Filter",
+                                onTap: () {
+                                  Get.bottomSheet(FilterBottomSheet(),
+                                      isScrollControlled: true,
+                                      ignoreSafeArea: false);
+                                },
+                              ),
                             ],
                           ),
-                        ),*/
-                        SizedBox(
-                          height: 12,
-                        ),
-                        Row(
-                          children: [
-                            OptionTile(
-                                icon: Icons.language,
-                                title: "EN",
-                                onTap: () {
-                                  Get.bottomSheet(
-                                    LanguageBottomSheet(),
-                                    isScrollControlled: true,
-                                  );
-                                }),
-                            Spacer(),
-                            OptionTile(
-                              icon: Icons.filter_alt_outlined,
-                              title: "Filter",
-                              onTap: () {
-                                Get.bottomSheet(FilterBottomSheet(),
-                                    isScrollControlled: true,
-                                    ignoreSafeArea: false);
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Obx(() {
-                if (controller.isLoading.value) {
-                  return SliverFillRemaining(child: ListLoadingTile());
-                }
-                return SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                  return _buildListItem(
-                      controller.searchedCountries.elementAt(index),
-                      () => Get.toNamed(AppRoutes.DETAIL,
-                          arguments: controller.searchedCountries[index]));
-                }, childCount: controller.searchedCountries.length));
-              })
-            ],
+                Obx(() {
+                  if (controller.isLoading.value) {
+                    return SliverFillRemaining(child: ListLoadingTile());
+                  } else if (controller.searchedCountries.isEmpty) {
+                    return SliverFillRemaining(
+                      child: Center(
+                        child: Text(
+                            'No data found!\n\nKindly swipe down to refresh',
+                        textAlign: TextAlign.center, style: Get.textTheme.titleSmall?.copyWith(color: CupertinoColors.systemGrey),),
+                      ),
+                    );
+                  }
+                  return SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                    return _buildListItem(
+                        controller.searchedCountries.elementAt(index),
+                        () => Get.toNamed(AppRoutes.DETAIL,
+                            arguments: controller.searchedCountries[index]));
+                  }, childCount: controller.searchedCountries.length));
+                })
+              ],
+            ),
           ),
         );
       }),

@@ -155,7 +155,8 @@ class FilterBottomSheet extends GetView<HomeController> {
                     ))
                   ],
                 ),
-              )
+              ),
+              SizedBox(height: 16,)
             ],
           ),
         ),
