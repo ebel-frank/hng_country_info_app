@@ -65,9 +65,6 @@ Contributions are welcome! If you'd like to contribute, please follow these step
 
 ## Demo
 Test the app directly on Appetize.io:
-👉 [HNG Mobile App on Appetize](https://appetize.io/app/b_7lgi7lcj7erxx5hrbtar2y7v6q)
+👉 [HNG Mobile App on Appetize](https://appetize.io/app/b_nvx2dsn7wgzylbfyoizrwia6r4)
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
