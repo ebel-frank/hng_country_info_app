@@ -7,6 +7,13 @@ CountryInfo is a mobile app built with **Flutter** that allows users to:
 
 ---
 
+## Screenshots
+| Home Screen | Country Details | Dark Mode |
+|-------------|-----------------|-----------|
+| <img src="home_light.png" width="200"> | <img src="detail_info.png" width="200"> | <img src="home_dark.png" width="200"> |
+
+---
+
 ## Features
 - **Country List**: Browse a list of all countries.
 - **Country Details**: View detailed information about a selected country, including:
